@@ -1,0 +1,40 @@
+# to fix workspace-tools vulnerable version
+# docker build -t poc:v2 .
+# install using nodejs
+
+# Base image
+FROM ubuntu:18.04
+
+# essential installation
+RUN apt-get update -y && \
+    # apt-get upgrade -y && \
+    apt install nano -y && \
+    apt install curl -y && \
+    apt install git -y && \
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt install nodejs=16.14.2 -y
+
+# copy essential files to container, poc.js
+WORKDIR /root/javascript/poc
+COPY /poc .
+
+# Prepare files to copy to /root/javascript/node_modules/workspace-tools/lib, git.js and fix.sh
+WORKDIR /root/javascript/fix
+COPY /fix .
+
+# install vulnerable version
+WORKDIR /root/javascript
+RUN npm install workspace-tools@0.18.3
+
+## Use <bash fix.sh> to run the below
+
+# run poc.js
+# WORKDIR /root/javascript/poc
+# RUN node poc.js
+
+# apply fix
+# WORKDIR /root/javascript/node_modules/workspace-tools/lib
+# COPY /fix/git.js .
+
+
+CMD ["bash"]

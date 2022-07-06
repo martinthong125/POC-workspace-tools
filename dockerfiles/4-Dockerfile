@@ -1,0 +1,53 @@
+# to fix workspace-tools vulnerable version
+# docker build -t poc:v4 .
+# using user tester and node16
+
+# Base image
+FROM ubuntu:18.04
+
+# essential installation
+RUN apt-get update -y && \
+    # apt-get upgrade -y && \
+    apt-get install nano -y && \
+    apt-get install curl -y && \
+    apt-get install git -y && \
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt install nodejs -y
+
+# curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+# RUN ["/bin/bash", "-c", "source ~/.bashrc"]
+# RUN ["/bin/bash", "-c", "nvm install 16.14.2"]
+# https://nodejs.org/dist/v16.14.2/node-v16.14.2.tar.gz
+
+RUN useradd -rm -d /home/tester -s /bin/bash -g root -G sudo -u 1001 tester
+USER tester
+# WORKDIR /home/tester
+
+# copy essential files to container, poc.js
+WORKDIR /home/tester/javascript/poc
+COPY /poc .
+
+# Prepare files to copy to /root/javascript/node_modules/workspace-tools/lib, git.js and fix.sh
+WORKDIR /home/tester/javascript/fix
+COPY /fix .
+
+# install vulnerable version
+WORKDIR /home/tester/javascript
+RUN npm install workspace-tools@0.18.3
+
+
+
+
+
+## Use <bash fix.sh> to run the below
+
+# run poc.js
+# WORKDIR /root/javascript/poc
+# RUN node poc.js
+
+# apply fix
+# WORKDIR /root/javascript/node_modules/workspace-tools/lib
+# COPY /fix/git.js .
+
+
+CMD ["bash"]

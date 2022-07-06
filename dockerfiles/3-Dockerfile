@@ -1,0 +1,50 @@
+# to fix workspace-tools vulnerable version
+# docker build -t poc:v3 .
+# using nvm to install older version of nodejs
+
+# Base image
+FROM ubuntu:18.04
+
+# essential installation
+RUN apt-get update -y && \
+    # apt-get upgrade -y && \
+    apt-get install nano -y && \
+    apt-get install curl -y && \
+    apt-get install git -y && \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash && \
+    . /root/.bashrc && \
+    nvm install v16.14.2 
+
+# RUN ["/bin/bash", "-c", "source ~/.bashrc"]
+# RUN ["/bin/bash", "-c", "nvm install 16.14.2"]
+
+
+# copy essential files to container, poc.js
+# WORKDIR /root/javascript/poc
+# COPY /poc .
+
+# Prepare files to copy to /root/javascript/node_modules/workspace-tools/lib, git.js and fix.sh
+# WORKDIR /root/javascript/fix
+# COPY /fix .
+
+# install vulnerable version
+WORKDIR /root/javascript
+# RUN npm install workspace-tools@0.18.3
+
+
+
+
+
+
+## Use <bash fix.sh> to run the below
+
+# run poc.js
+# WORKDIR /root/javascript/poc
+# RUN node poc.js
+
+# apply fix
+# WORKDIR /root/javascript/node_modules/workspace-tools/lib
+# COPY /fix/git.js .
+
+
+CMD ["bash"]
